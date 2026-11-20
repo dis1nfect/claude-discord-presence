@@ -1,0 +1,12 @@
+{
+  "name": "claude-discord-presence",
+  "owner": { "name": "dis1nfect" },
+  "metadata": { "description": "Show your Claude Code session as a Discord activity." },
+  "plugins": [
+    {
+      "name": "discord-presence",
+      "source": "./discord-presence",
+      "description": "Claude Code session as Discord Rich Presence – pick your own plan and model."
+    }
+  ]
+}

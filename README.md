@@ -52,6 +52,19 @@ claude plugin marketplace add dis1nfect/claude-discord-presence
 claude plugin install discord-presence@claude-discord-presence
 ```
 
+<details>
+<summary><b>Alternative: install from the release zip</b></summary>
+
+1. Download `claude-discord-presence-vX.Y.Z.zip` from [Releases](https://github.com/dis1nfect/claude-discord-presence/releases) and extract it to a folder you keep, for example `~/claude-plugins/`.
+2. Add the extracted folder as a local marketplace and install from it:
+   ```bash
+   claude plugin marketplace add ~/claude-plugins/claude-discord-presence
+   claude plugin install discord-presence@claude-discord-presence
+   ```
+   Don't delete the folder afterwards. Claude Code loads the plugin from there.
+
+</details>
+
 Then **restart Claude Code** (or open a new session) so the hooks load.
 
 ## 3. Set it up

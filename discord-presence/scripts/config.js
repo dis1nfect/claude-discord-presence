@@ -102,6 +102,18 @@ function show() {
   if (!cfg.clientId) console.log('\n⚠ Keine Discord Application ID gesetzt → /discord-presence:setup');
   console.log(`\nAbos:   ${C.PLANS.join(', ')}`);
   console.log(`Modelle: ${C.MODELS.join(', ')} (oder beliebiger Text)`);
+  console.log(`Effort: ${C.EFFORTS.join(', ')}, off (oder beliebiger Text)`);
+}
+
+/** "off"/"aus"/"none" hides the effort; anything else sets it and shows it. */
+function setEffort(v) {
+  if (/^(off|aus|none|hide|keins?)$/i.test(v)) {
+    cfg.showEffort = false;
+    return '✓ Effort-Level wird nicht mehr angezeigt';
+  }
+  cfg.effort = matchFrom(C.EFFORTS, v) || v;
+  cfg.showEffort = true;
+  return `✓ Effort gesetzt: ${printable(cfg.effort)}${cfg.effort === 'auto' ? ' (wird aus der Session erkannt)' : ''}`;
 }
 
 function printable(v) {
@@ -132,6 +144,14 @@ switch ((cmd || 'show').toLowerCase()) {
     break;
   }
 
+  case 'effort': {
+    if (!value) fail(`Bitte ein Effort-Level angeben: ${C.EFFORTS.join(', ')}, off oder freier Text`);
+    const msg = setEffort(value);
+    C.saveConfig(cfg);
+    console.log(msg);
+    break;
+  }
+
   case 'client-id':
   case 'clientid': {
     if (!/^\d{15,22}$/.test(value)) fail('Die Application ID ist eine rein numerische ID aus dem Discord Developer Portal.');
@@ -157,6 +177,7 @@ switch ((cmd || 'show').toLowerCase()) {
     }
     if (key === 'plan') cfg.plan = matchFrom(C.PLANS, v) || v;
     else if (key === 'model') cfg.model = matchFrom(C.MODELS, v) || v;
+    else if (key === 'effort') cfg.effort = matchFrom(C.EFFORTS, v) || v;
     else cfg[key] = parseValue(key, v);
     C.saveConfig(cfg);
     console.log(`✓ ${key} = ${JSON.stringify(cfg[key])}`);
@@ -188,5 +209,5 @@ switch ((cmd || 'show').toLowerCase()) {
     break;
 
   default:
-    fail(`Unbekannter Befehl "${printable(cmd)}". Befehle: show, plan, model, client-id, set, on, off, restart, stop`);
+    fail(`Unbekannter Befehl "${printable(cmd)}". Befehle: show, plan, model, effort, client-id, set, on, off, restart, stop`);
 }

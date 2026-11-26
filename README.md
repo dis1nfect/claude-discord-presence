@@ -1,17 +1,18 @@
 # Claude Code → Discord Rich Presence
 
-A [Claude Code](https://claude.com/claude-code) plugin that shows your current Claude Code session as an activity on your Discord profile. You choose which **plan** and **model** it displays.
+A [Claude Code](https://claude.com/claude-code) plugin that shows your current Claude Code session as an activity on your Discord profile. You choose which **plan**, **model** and **effort level** it displays.
 
 ```
 Playing Vibe Coding
-Working on my-project            ← or "Waiting for approval in …" / "Idle in …"
-Fable 5.2 · Claude Max 5x        ← model · plan (both up to you)
+Working on my-project                    ← or "Waiting for approval in …" / "Idle in …"
+Fable 5.2 · High Effort · Claude Max 5x  ← model · effort · plan (all up to you)
 01:23 elapsed
 ```
 
 - Live status: **Working** while Claude runs, **Waiting for approval** at a permission prompt, **Idle** when the turn is done
 - Pick your plan: Free, Pro, Max 5x, Max 20x, Team, Enterprise, API, or any text
 - Pick your model: Opus, Sonnet, Haiku, Fable, any text, or `auto` (read from the session, follows `/model` switches)
+- Pick your effort level: Low, Medium, High, Extra High, Max, any text, `auto` (read from the session, follows effort changes) or `off`
 - Several sessions open at once? The most recently active one is shown, and the count appears in the image tooltip
 - No dependencies, only Node.js. Works on Windows, macOS and Linux
 
@@ -75,15 +76,16 @@ In Claude Code:
 /discord-presence:setup YOUR_APPLICATION_ID
 ```
 
-The setup asks for your plan and model and turns the status on. Send a prompt, and your profile updates within a few seconds.
+The setup asks for your plan, model and effort level and turns the status on. Send a prompt, and your profile updates within a few seconds.
 
 ## Usage
 
 | Command | What it does |
 | --- | --- |
-| `/discord-presence:setup [id]` | Guided setup: Application ID, plan, model |
+| `/discord-presence:setup [id]` | Guided setup: Application ID, plan, model, effort |
 | `/discord-presence:plan Max 20x` | Set the plan: `Free`, `Pro`, `Max 5x`, `Max 20x`, `Team`, `Enterprise`, `API` or any text |
 | `/discord-presence:model Opus 5.5` | Set the model: `auto`, `Opus 5.5`, `Sonnet 5.5`, `Haiku 5.5`, `Fable 5.2` or any text |
+| `/discord-presence:effort High` | Set the effort level: `auto`, `Low`, `Medium`, `High`, `Extra High`, `Max`, any text, or `off` to hide it |
 | `/discord-presence:status` | Show the current settings and whether the background process is running |
 | `/discord-presence:toggle [on\|off]` | Turn the Discord status on or off |
 
@@ -110,6 +112,8 @@ node <plugin>/scripts/config.js restart                    # restart the backgro
 | `clientId` | `""` | Your Discord Application ID |
 | `plan` | `Pro` | Plan text |
 | `model` | `auto` | Model text, or `auto` to detect it |
+| `effort` | `auto` | Effort level (`Low` … `Max` are shown as "High Effort" etc.), any text shown as-is, or `auto` to detect it |
+| `showEffort` | `true` | Show the effort level next to the model |
 | `showProject` | `true` | Show the name of the project folder |
 | `showElapsed` | `true` | Show elapsed time since the session started |
 | `showPlan` | `true` | Show the plan next to the model |
@@ -161,8 +165,8 @@ Optionally delete `~/.claude/discord-presence/`.
    /plugin marketplace add dis1nfect/claude-discord-presence
    /plugin install discord-presence@claude-discord-presence
    ```
-3. Claude Code neu starten, dann `/discord-presence:setup DEINE_ID` ausführen. Der Befehl fragt nach Abo und Modell.
-4. Abo und Modell später ändern: `/discord-presence:plan Max 20x` und `/discord-presence:model Opus 5.5` (oder `auto`).
+3. Claude Code neu starten, dann `/discord-presence:setup DEINE_ID` ausführen. Der Befehl fragt nach Abo, Modell und Effort-Level.
+4. Später ändern: `/discord-presence:plan Max 20x`, `/discord-presence:model Opus 5.5` und `/discord-presence:effort High` (jeweils auch `auto`; Effort zusätzlich `off`).
 
 Voraussetzungen: die Discord-Desktop-App, und unter *Einstellungen → Aktivitätsprivatsphäre* muss „Erkannte Aktivitäten mit anderen teilen“ eingeschaltet sein.
 

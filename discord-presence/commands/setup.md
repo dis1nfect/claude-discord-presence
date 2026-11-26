@@ -1,5 +1,5 @@
 ---
-description: Discord-Status einrichten (Application ID, Abo, Modell)
+description: Discord-Status einrichten (Application ID, Abo, Modell, Effort)
 argument-hint: "[Discord Application ID]"
 allowed-tools: Bash(node:*), AskUserQuestion
 ---
@@ -24,5 +24,7 @@ Schritte:
    `node "${CLAUDE_PLUGIN_ROOT}/scripts/config.js" plan "<ABO>"`
 3. **Modell.** Frag mit AskUserQuestion nach dem Modell (auto – automatisch erkennen, Opus 5.5, Sonnet 5.5, Haiku 5.5; "Other" für freien Text) und setze es mit
    `node "${CLAUDE_PLUGIN_ROOT}/scripts/config.js" model "<MODELL>"`
-4. Aktiviere den Status: `node "${CLAUDE_PLUGIN_ROOT}/scripts/config.js" on`
-5. Sag dem Nutzer, dass die Discord-Desktop-App laufen muss und unter *Einstellungen → Aktivitätsprivatsphäre* "Aktuelle Aktivität als Statusnachricht teilen" an sein muss. Weitere Befehle: `/discord-presence:plan`, `/discord-presence:model`, `/discord-presence:status`, `/discord-presence:toggle`.
+4. **Effort-Level.** Frag mit AskUserQuestion nach dem Effort-Level (auto – automatisch erkennen, High, Max, off – nicht anzeigen; "Other" für Low/Medium/Extra High/freien Text) und setze es mit
+   `node "${CLAUDE_PLUGIN_ROOT}/scripts/config.js" effort "<EFFORT>"`
+5. Aktiviere den Status: `node "${CLAUDE_PLUGIN_ROOT}/scripts/config.js" on`
+6. Sag dem Nutzer, dass die Discord-Desktop-App laufen muss und unter *Einstellungen → Aktivitätsprivatsphäre* "Aktuelle Aktivität als Statusnachricht teilen" an sein muss. Weitere Befehle: `/discord-presence:plan`, `/discord-presence:model`, `/discord-presence:effort`, `/discord-presence:status`, `/discord-presence:toggle`.

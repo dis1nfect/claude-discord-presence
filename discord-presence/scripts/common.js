@@ -11,6 +11,9 @@ const LOG_FILE = path.join(BASE_DIR, 'daemon.log');
 
 const PLANS = ['Free', 'Pro', 'Max 5x', 'Max 20x', 'Team', 'Enterprise', 'API'];
 const MODELS = ['auto', 'Opus 5.5', 'Sonnet 5.5', 'Haiku 5.5', 'Fable 5.2'];
+const EFFORTS = ['auto', 'Low', 'Medium', 'High', 'Extra High', 'Max'];
+// Claude Code's effort ids -> display names
+const EFFORT_NAMES = { low: 'Low', medium: 'Medium', high: 'High', xhigh: 'Extra High', max: 'Max' };
 // Session files that have not been touched for this long are considered stale.
 const STALE_MS = 12 * 60 * 60 * 1000;
 
@@ -21,6 +24,9 @@ const DEFAULTS = {
   plan: 'Pro',
   // "auto" = read the model actually used from the session transcript
   model: 'auto',
+  // "auto" = read the effort level from the session transcript; or a preset / any text
+  effort: 'auto',
+  showEffort: true,
   showProject: true,
   showElapsed: true,
   showPlan: true,
@@ -161,8 +167,20 @@ function prettyModel(id) {
   return nums.length ? `${name} ${nums.join('.')}` : name;
 }
 
+/**
+ * Display text for an effort level: "xhigh" / "Extra High" -> "Extra High Effort".
+ * Custom text (e.g. "Ultrathink") is shown exactly as written.
+ */
+function prettyEffort(v) {
+  const s = String(v || '').trim();
+  if (!s) return '';
+  const key = s.toLowerCase().replace(/[\s_-]+/g, '');
+  const byId = EFFORT_NAMES[key] || EFFORT_NAMES[{ extrahigh: 'xhigh' }[key]];
+  return byId ? `${byId} Effort` : s;
+}
+
 module.exports = {
   BASE_DIR, CONFIG_FILE, SESSIONS_DIR, LOCK_FILE, LOG_FILE,
-  PLANS, MODELS, DEFAULTS, STALE_MS,
+  PLANS, MODELS, EFFORTS, DEFAULTS, STALE_MS, prettyEffort,
   ensureDirs, atomicWriteFileSync, readConfigStrict, loadConfig, saveConfig, sleepSync, withFsRetry, isAlive, daemonPid, safeId, prettyModel,
 };

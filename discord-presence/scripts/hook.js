@@ -56,6 +56,10 @@ function startDaemon() {
     const modelId = typeof input.model === 'string'
       ? input.model
       : (input.model && typeof input.model.id === 'string' ? input.model.id : undefined);
+    const rawEffort = typeof input.effort === 'string'
+      ? input.effort
+      : (input.effort && typeof input.effort.level === 'string' ? input.effort.level : undefined);
+    const effort = rawEffort && /^[a-zA-Z]{1,20}$/.test(rawEffort) ? rawEffort : s.effort;
     const startedAt = Number.isFinite(s.startedAt) && s.startedAt > 0 ? s.startedAt : now;
 
     s = {
@@ -65,6 +69,7 @@ function startDaemon() {
       project: path.basename(cwd),
       transcriptPath,
       model: modelId || s.model,
+      effort,
       startedAt,
       status: action === 'start' ? 'idle' : action,
       updatedAt: now,

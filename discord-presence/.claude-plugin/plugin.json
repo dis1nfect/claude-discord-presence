@@ -1,7 +1,7 @@
 {
   "name": "discord-presence",
-  "version": "1.0.0",
-  "description": "Shows your Claude Code session as a Discord activity (Rich Presence) – with a plan and model you pick yourself.",
+  "version": "1.1.0",
+  "description": "Shows your Claude Code session as a Discord activity (Rich Presence) – with a plan, model and effort level you pick yourself.",
   "author": { "name": "dis1nfect" },
   "license": "MIT",
   "keywords": ["discord", "rich-presence", "activity", "status"]

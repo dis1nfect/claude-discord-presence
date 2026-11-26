@@ -118,15 +118,24 @@ function readSessions() {
   return out.sort((a, b) => b.updatedAt - a.updatedAt);
 }
 
-/** Reads the end of the transcript and returns the last model id used. */
-function modelFromTranscript(file) {
-  if (!file || typeof file !== 'string') return null;
+const NO_INFO = Object.freeze({ model: null, effort: null });
+
+function lastMatch(text, re) {
+  let m;
+  let last = null;
+  while ((m = re.exec(text)) !== null) last = m[1];
+  return last;
+}
+
+/** Reads the end of the transcript and returns the last model id and effort level used. */
+function infoFromTranscript(file) {
+  if (!file || typeof file !== 'string') return NO_INFO;
   let fd;
   try {
     const st = fs.statSync(file);
-    if (!st.isFile()) return null;
+    if (!st.isFile()) return NO_INFO;
     const cached = modelCache.get(file);
-    if (cached && cached.size === st.size) return cached.model;
+    if (cached && cached.size === st.size) return cached;
     const len = Math.min(st.size, 256 * 1024);
     const buf = Buffer.alloc(len);
     if (len > 0) {
@@ -138,17 +147,17 @@ function modelFromTranscript(file) {
         read += n;
       }
     }
-    const matches = buf.toString('utf8').match(/"model"\s*:\s*"([^"]*claude[^"]*)"/g);
-    let model = cached ? cached.model : null;
-    if (matches && matches.length) {
-      model = matches[matches.length - 1].replace(/^.*:\s*"/, '').replace(/"$/, '');
-    }
+    const text = buf.toString('utf8');
+    // Assistant entries carry e.g. "model":"claude-opus-5-5" and "effort":"high".
+    const model = lastMatch(text, /"model"\s*:\s*"([^"]*claude[^"]*)"/g) || (cached && cached.model) || null;
+    const effort = lastMatch(text, /"effort"\s*:\s*"([a-zA-Z]{1,20})"/g) || (cached && cached.effort) || null;
+    const info = { size: st.size, model, effort };
     // Keep the cache bounded when many transcripts are seen over time.
     if (modelCache.size >= 200) modelCache.delete(modelCache.keys().next().value);
-    modelCache.set(file, { size: st.size, model });
-    return model;
+    modelCache.set(file, info);
+    return info;
   } catch {
-    return null;
+    return NO_INFO;
   } finally {
     if (fd !== undefined) { try { fs.closeSync(fd); } catch {} }
   }
@@ -169,10 +178,19 @@ function clamp(str, fallback) {
 }
 
 function buildActivity(cfg, session, count) {
+  const info = infoFromTranscript(session.transcriptPath);
+
   let model = typeof cfg.model === 'string' ? cfg.model : '';
   if (!model || model === 'auto') {
-    const detected = modelFromTranscript(session.transcriptPath) || session.model;
+    const detected = info.model || session.model;
     model = C.prettyModel(typeof detected === 'string' ? detected : '') || 'Claude';
+  }
+
+  let effort = '';
+  if (cfg.showEffort) {
+    const chosen = typeof cfg.effort === 'string' ? cfg.effort.trim() : '';
+    const raw = !chosen || chosen.toLowerCase() === 'auto' ? (info.effort || session.effort) : chosen;
+    effort = C.prettyEffort(typeof raw === 'string' ? raw : '');
   }
 
   const project = typeof session.project === 'string' ? session.project : '';
@@ -185,6 +203,7 @@ function buildActivity(cfg, session, count) {
   }[session.status] || `Coding${whereIn}`;
 
   const stateParts = [model];
+  if (effort) stateParts.push(effort);
   if (cfg.showPlan && cfg.plan) stateParts.push(cfg.plan === 'API' ? 'API' : `Claude ${cfg.plan}`);
 
   const activity = {

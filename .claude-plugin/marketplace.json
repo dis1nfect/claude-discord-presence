@@ -6,7 +6,7 @@
     {
       "name": "discord-presence",
       "source": "./discord-presence",
-      "description": "Claude Code session as Discord Rich Presence – pick your own plan and model."
+      "description": "Claude Code session as Discord Rich Presence – pick your own plan, model and effort level."
     }
   ]
 }
